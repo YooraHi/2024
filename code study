@@ -1,9 +1,13 @@
+[22Aug2024]
+
+1. torch - autocast  
+
 <작성 code> 
 autocast = torch.cuda.amp.autocat(enabled=AMP, dtype=torch.half)
 
-- visual studio에서 code를 작성해보고 코드를 하나하나 공부해보다가, audocast에는 쭉 짝대기가 그어져 있고 사용할 수 없다하고
+- visual studio에서 code를 작성해보고 코드를 하나하나 공부해보다가, audocast에는 쭉 짝대기가 그어져 있고 사용할 수 x. 
 ---------------------------------------------------------------------------------------------------------------------------
-클래스 "autocast"의 생성자는 더 이상 사용되지 않습니다.
+클래스 "autocast"의 생성자는 더 이상 사용되지 x. 
     
   `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.Pylance
 class autocast(
@@ -11,5 +15,27 @@ class autocast(
     dtype: dtype = torch.float16,
     cache_enabled: bool = True
 )
-
 -------------------------------------------------------------------------------------------------------------------------
+
+-> ERROR Message 2가지 문제 
+
+(1) Deprecated Warning 
+위에서 언급 되었던 'torch.cuda.amp.autocast' 의 사용 더이상 권장 되지 x.   -----> 'torch.amp.autocast('cuda', ...)' 을 사용 하라는 경고. 
+
+<수정 code> 
+# 기존 코드
+# autocast = torch.cuda.amp.autocast(enabled=USE_AMP, dtype=torch.half)
+
+# 수정된 코드
+autocast = torch.amp.autocast('cuda', dtype=torch.half, enabled=USE_AMP)
+
+(2) CUDA 사용 불가 Warning 
+UserWarning: User provided device_type of 'cuda', but CUDA is not available. 
+Disabling이라는 경고는 GPU(CUDA)가 사용 가능하지 않다는 것을 의미한다. 이로 인해 모든 연산이 CPU에서 수행되며, 혼합 정밀도 연산이 비활성화된다.
+
+--> [방법] CPU 모드로 전환: CUDA가 사용 불가 상태라면, 모델을 CPU 모드로 전환하여 코드가 실행되도록 한다. 이 경우, device = 'cpu'로 설정하여 CPU에서 실행되도록 강제할 수 있다.
+
+<수정 code>
+device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+# ...
+autocast = torch.amp.autocast(device_type=device if device == 'cuda:0' else 'cpu', dtype=torch.half, enabled=USE_AMP)
