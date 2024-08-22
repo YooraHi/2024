@@ -6,4 +6,4 @@
 ## -Code error study 
 
 ## -Multimodal part study 
--1. ChartQA-MLLM: 멀티모달 LLM을 활용한 차트 질문-답변 분야 성능 향상 프로젝트 [self study]
+-1. ChartQA-MLLM: 멀티모달 LLM을 활용한 차트 질문-답변 분야 성능 향상 프로젝트 [self study : https://github.com/YooraHi/2024/blob/main/Self%20study.md ] 
