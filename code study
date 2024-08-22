@@ -39,3 +39,40 @@ Disabling이라는 경고는 GPU(CUDA)가 사용 가능하지 않다는 것을 �
 device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 # ...
 autocast = torch.amp.autocast(device_type=device if device == 'cuda:0' else 'cpu', dtype=torch.half, enabled=USE_AMP)
+
+
+-------------------------------------------------------------------------
+
+Batch size : 3 error 
+error code : No predictions for batch 0, skipping concatenation.
+
+---> 출력된 메시지에 따르면, 배치 크기와 이미지 형태는 기대한 대로 torch.Size([3, 3, 112, 112])로 구성되고 있지만 모델이 여전히 예측을 생성하지 못하고 있기에, 
+이 문제는 입력 데이터의 형태가 모델의 기대와 맞지 않아서 발생할 수 있는 것으로 판단됨. 
+
+그래서 하단과 같은 방식으로 진행함. 
+
+(1) collate_fn 점검 및 수정 방법:
+간단한 collate_fn 테스트:
+
+기본적으로 collate_fn은 DataLoader가 각 데이터 포인트를 어떻게 배치로 모아주는지를 제어함. 
+
+# collate_fn을 통해 DataLoader에서 배치 형태 제대로 처리
+def collate_fn(batch):
+    isic_ids, imgs = zip(*batch)
+    imgs = torch.stack(imgs)
+    
+    # 디버깅을 위한 출력 추가
+    print(f"Batch size: {len(batch)}, Image shape: {imgs.shape}")
+    
+    return isic_ids, imgs
+
+---> 그래도 결과는 하단과 같은 error..
+
+  0%|          | 0/1 [00:00<?, ?it/s]Batch size: 3, Image shape: torch.Size([3, 3, 112, 112])
+Input shape: torch.Size([3, 3, 112, 112])
+No predictions for batch 0, skipping concatenation.
+100%|##########| 1/1 [00:00<00:00, 21.74it/s]
+
+시간은 자정이 다되가고..
+
+
