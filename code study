@@ -1,0 +1,15 @@
+<작성 code> 
+autocast = torch.cuda.amp.autocat(enabled=AMP, dtype=torch.half)
+
+- visual studio에서 code를 작성해보고 코드를 하나하나 공부해보다가, audocast에는 쭉 짝대기가 그어져 있고 사용할 수 없다하고
+---------------------------------------------------------------------------------------------------------------------------
+클래스 "autocast"의 생성자는 더 이상 사용되지 않습니다.
+    
+  `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.Pylance
+class autocast(
+    enabled: bool = True,
+    dtype: dtype = torch.float16,
+    cache_enabled: bool = True
+)
+
+-------------------------------------------------------------------------------------------------------------------------
