@@ -1,4 +1,4 @@
-# 2024 study 1
+# 2024 Self study 
 
 ## ChartQA-MLLM 소개
 
