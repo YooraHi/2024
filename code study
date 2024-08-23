@@ -1,6 +1,11 @@
 [22Aug2024]
+Kaggle Competition 'ISIC 2024 - Skin Cancer Detection with 3D-TBP'을 준비하게 되면서 영박사님과 따로 공부하였던 공부방법이 엄청 도움도 되었고, 
+원선생님께서(매일 정진하는 모습을 보며 나도 더 노력하고 있다 으쌰!!너무 감사하고 더욱 도약했으면 하는 존재 ^0^) 대회를 나가게 된다고 말을 하게 되었을 때 정말 열심히 모르는 점들을 알려주셨다. 아주 기본적인 것부터 check를 하고 (개발 환경이 잘 구성 되어 있는지 등) 대회 나갈 때 어떻게 하는지 등등..
+그래서 error가 났을 때 이제는 code 까막눈이었던 내가 아주 조금은 code를 읽어가는 재미를 느끼며 공부의 맛을 더 깨달아가는 나날이랄까 :). 
 
-1. torch - autocast  
+
+주요 error code (1) 
+torch - autocast  
 
 <작성 code> 
 autocast = torch.cuda.amp.autocat(enabled=AMP, dtype=torch.half)
@@ -15,7 +20,7 @@ class autocast(
     dtype: dtype = torch.float16,
     cache_enabled: bool = True
 )
--------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
 
 -> ERROR Message 2가지 문제 
 
@@ -28,8 +33,10 @@ class autocast(
 
 # 수정된 코드
 autocast = torch.amp.autocast('cuda', dtype=torch.half, enabled=USE_AMP)
+----------------------------------------------------------------------------------------------------------------------------
+주요 error code (2) 
+CUDA 사용 불가 Warning 
 
-(2) CUDA 사용 불가 Warning 
 UserWarning: User provided device_type of 'cuda', but CUDA is not available. 
 Disabling이라는 경고는 GPU(CUDA)가 사용 가능하지 않다는 것을 의미한다. 이로 인해 모든 연산이 CPU에서 수행되며, 혼합 정밀도 연산이 비활성화된다.
 
@@ -41,9 +48,10 @@ device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 autocast = torch.amp.autocast(device_type=device if device == 'cuda:0' else 'cpu', dtype=torch.half, enabled=USE_AMP)
 
 
--------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------
+주요 error code (3) 
+Batch size 
 
-Batch size : 3 error 
 error code : No predictions for batch 0, skipping concatenation.
 
 ---> 출력된 메시지에 따르면, 배치 크기와 이미지 형태는 기대한 대로 torch.Size([3, 3, 112, 112])로 구성되고 있지만 모델이 여전히 예측을 생성하지 못하고 있기에, 
@@ -74,5 +82,61 @@ No predictions for batch 0, skipping concatenation.
 100%|##########| 1/1 [00:00<00:00, 21.74it/s]
 
 시간은 자정이 다되가고..
+
+
+--------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+23Aug24
+
+test 목적으로 training 전에 돌려본 코드가 돌아가기도 전에 하단과 같은 error가 발생하였음. 
+주요 error의 원인은 때로는 간단한 code 하나 일 수도 있고, 아닐 수도 있기에 code 를 읽을 수 있는 사람이 되어야 한다는 생각이 들었다. 
+민선생님께서 잠깐 code를 봐주셨는데 trainining 전 돌아가지 않던 이유는 단순했달까. 하지만 그것으로 error가 고쳐지지 않았다. 
+(민선생님은 자기관리가 철저하고 다정다감한 사람이고 항상 노력하는 모습이 보기 좋다 :) 진취적인 민선생님 늘 걱정하는 그대여, 더 잘될것이다!) 
+
+주요 error code (1) 
+
+error code : No predictions for batch 0, skipping concatenation.
+
+수정 방법 (1) : 모델 예측 (pred code 부분) 출력을 통해 재확인. 
+               if y_i numel() > 0 : '조건을 추가하여 model의 출력의 실제값이 있는지 확인. 
+          (2) : y_i numel(  ) > 0 (numel 함수 사용) 
+               모델 출력 요소수가 0이 아닌지 및 모델이 빈출력을 생성하는지 확인하려는 목적임. 
+---------------------------------------------------------------------------------------------------------------------------
+
+error code (2) 
+
+print(f"Batch size: {imgs.size(0)}, Image shape: {imgs.shape}, Labels: {labels}")
+AttributeError: 'tuple' object has no attribute 'size'.
+
+: 'imgs' 가 'torch.tensor'가 아니라 'tuple' 이라는 것을 의미함. '_get_item_" method 에서 반환된 값인 (img,label) <- 이러한 tuple 형태. 이므로.
+
+'imgs'와 'labels'를 개별적으로 다루어야함. 
+
+=> code 내의 'DataLoader'에서 반환되는 값은 tuple 형식인 (img, label) 로 이해하면 됨. 
+
+---------------------------------------------------------------------------------------------------------------------------
+수정 수정 error 수정 끝에 test error는 고쳤음.. test는 돌아가지만 train code는 error 가 시작되었으니.. ..!
+training error 시작.. ㅣ o v e  is p a i n .... x 
+
+error code (3) 
+
+Traceback (most recent call last):
+  File "C:\Users\CHOIWOOJEONG\Documents\Kaggle\main.py", line 21, in <module>
+    train_df = pd.read_csv(train_meta_path)
+NameError: name 'train_meta_path' is not defined
+
+출력되게 된 배경 : train_meta_path 변수를 포함해서 코드를 수정했으나, 
+"train_meta_path 변수를 먼저 정의한 후, 해당 변수를 사용해 train_df를 로드" 가 필요하다고 언급함. 
+
+code 오류 해석 : 이 오류는 transforms_val 변수가 정의되지 않았기 때문에 발생한 것으로, transforms_val은 데이터 전처리를 위한 변환(transform) 설정이므로, 
+코드에서 제대로 정의되어야 함. 이 문제를 해결하기 위해, transforms_val을 정의한 부분을 코드에서 올바르게 위치시키고, 다시 실행해보면 됨. 
+
+=>  transforms_val을 정의한 부분을 코드에서 올바르게 위치시킴. 
+
+# 4. 데이터 전처리 설정 (transforms_val 정의)
+transforms_val = A.Compose([
+    A.Resize(112, 112),
+    A.Normalize(mean=0.5, std=0.5)
+])
 
 
