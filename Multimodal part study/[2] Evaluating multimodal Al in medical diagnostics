@@ -1,0 +1,18 @@
+
+
+이 연구는 NEJM Image Challenge data set을 사용하여 의료 진단에서 Muti-modal의 성능을 평가하고 정확도를 인간 집단 지능과 비교하는 것을 주요 요점으로 다루고 있다. 
+
+연구에서는 하단과 같은 내용들이 중점적으로 등장한다. 
+
+🗒️ 인간 집단 지성은 90.8%의 정확도를 달성하여 모든 AI 모델을 능가한다.
+
+🗒️ GPT-4 Vision Preview는 선택적이었으며, 종종 더 작은 이미지와 긴 텍스트로 더 쉬운 질문에 응답했다. 
+
+🗒️ OpenAI의 GPT-4 Vision Preview는 사례의 76%만 답변한 반면, 다른 모델은 모든 질문에 응답했다. 
+
+🗒️ 이 연구는 임상 진단에서 Muti-modal AI의 잠재력과 현재의 한계를 강조하고 있으며, 
+
+EU AI Act는 의료 AI를 포함한 고위험 AI 시스템에 대한 투명성과 견고성 및 human director의 필요성을 강조했다.
+
+
+✍🏻 Robert Kaczmarczyk, Theresa Isabelle Wilhelm, Dr. med. Ron Martin, B.Sc., Dr. med. Jonas Roos. Evaluating multimodal AI in medical diagnostics. npj Digital Medicine. 2024. DOI: 10.1038/s41746-024-01208-3
